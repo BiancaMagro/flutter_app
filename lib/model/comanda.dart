@@ -1,8 +1,8 @@
 class Comanda{
   int? codigo;
-  String nome;
-  int mesa;
-  Comanda({this.codigo, required this.nome, required this.mesa});
+  String? nome;
+  int? mesa;
+  Comanda({this.codigo, this.nome, this.mesa});
 
   Map<String, dynamic> toMap(){
     return {
@@ -11,4 +11,9 @@ class Comanda{
       'mesa': mesa
     };
   }
+
+  Comanda.fromJson(Map<String, dynamic> json):
+    codigo = json['codigo'],
+    nome = json['nome'],
+    mesa = json['mesa'];
 }

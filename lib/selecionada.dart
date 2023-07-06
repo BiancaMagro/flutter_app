@@ -101,7 +101,7 @@ class _SelecionadaState extends State<Selecionada> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text("${comanda.mesa}"),
-                    Text(comanda.nome),
+                    Text(comanda.nome!),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.8,
                       child: FutureBuilder<List<Pedido>>(

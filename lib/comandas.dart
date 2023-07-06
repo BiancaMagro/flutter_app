@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/db/comandaDAO.dart';
 import 'package:flutter_app/db/dataAccessObject.dart';
 import 'package:flutter_app/selecionada.dart';
 
@@ -57,7 +58,7 @@ class _comandasState extends State<comandas> {
                 ),
                 ElevatedButton(
                   onPressed: (){
-                    DataAccessObject().addComanda(Comanda(nome: _nome.text, mesa: int.tryParse(_mesa.text)!));
+                    ComandaDAO().addComanda(Comanda(nome: _nome.text, mesa: int.tryParse(_mesa.text)!));
                     _nome.clear();
                     _mesa.clear();
                     setState(() {

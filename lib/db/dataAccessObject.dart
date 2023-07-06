@@ -6,10 +6,7 @@ import '../model/produto.dart';
 import 'OpenDatabasedb.dart';
 
 class DataAccessObject{
-  addComanda(Comanda comanda) async{
-    final Database db =  await getDatabase();
-    db.insert("COMANDA", comanda.toMap());
-  }
+
   addPedido(Pedido pedido) async{
     final Database db = await getDatabase();
     db.insert("PEDIDO", pedido.toMap());
