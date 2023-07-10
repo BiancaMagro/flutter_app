@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/db/comandaDAO.dart';
 import 'package:flutter_app/db/dataAccessObject.dart';
 import 'package:flutter_app/selecionada.dart';
 
@@ -58,7 +57,7 @@ class _comandasState extends State<comandas> {
                 ),
                 ElevatedButton(
                   onPressed: (){
-                    ComandaDAO().addComanda(Comanda(nome: _nome.text, mesa: int.tryParse(_mesa.text)!));
+                    DataAccessObject().addComanda(Comanda(nome: _nome.text, mesa: int.tryParse(_mesa.text)!));
                     _nome.clear();
                     _mesa.clear();
                     setState(() {
@@ -81,7 +80,7 @@ class _comandasState extends State<comandas> {
             Expanded(
               child: FutureBuilder<List<Comanda>>(
                 initialData: [],
-                future: new DataAccessObject().getComandas(),
+                future: DataAccessObject().getComandas(),
                 builder: (context, snapshot){
                   final List<Comanda>? comandas = snapshot.data;
                   return ListView.builder(

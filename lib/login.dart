@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_app/comandas.dart';
+import 'package:flutter_app/db/LoginService.dart';
 
 class login extends StatelessWidget {
   const login({Key? key}) : super(key: key);
@@ -18,6 +19,8 @@ class home extends StatefulWidget {
 }
 
 class _homeState extends State<home> {
+  TextEditingController _email = TextEditingController();
+  TextEditingController _senha = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +39,7 @@ class _homeState extends State<home> {
               child: Column(
                 children: [
                   TextField(
+                    controller: _email,
                     decoration: InputDecoration(
                         label: Text("Email", style: TextStyle(fontSize: 22),),
                         border: OutlineInputBorder(
@@ -47,6 +51,7 @@ class _homeState extends State<home> {
                     height: 10,
                   ),
                   TextField(
+                    controller: _senha,
                     obscureText: true,
                     decoration: InputDecoration(
                         label: Text("senha", style: TextStyle(fontSize: 22),),
@@ -56,10 +61,19 @@ class _homeState extends State<home> {
                     )
                   ),
                   ElevatedButton(
-                    onPressed: (){
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => comandas()
-                      ));
+                    onPressed: () async{
+                      if(await logarService(_email.text, _senha.text)) {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                            builder: (context) => comandas()
+                        ));
+                      }else{
+                        showDialog(context: context, builder: (BuildContext context){
+                          return  AlertDialog(
+                            title: Text("Credencias incorretas!"),
+                            content: Text("As credencias informadas no login estão incorretas!"),
+                          );
+                        });
+                      }
                     },
                     child: Text("Logar"),
                   )

@@ -2,18 +2,21 @@ class Produto{
   int? codigo;
   String? nome;
   double? valor;
+  bool? indcozinha;
   Produto({this.codigo, this.nome, this.valor});
 
   Map<String, dynamic> toMap(){
     return {
-      'codigo': codigo,
+      'id': codigo,
       'nome': nome,
-      'valor': valor
+      'preco': valor,
+      'indcozinha': indcozinha
     };
   }
 
   Produto.fromJson(Map<String, dynamic> json):
-    codigo = json['codigo'],
+    codigo = json['id'],
     nome = json['nome'],
-    valor = json['valor'];
+    valor = json['preco'],
+    indcozinha = json['indcozinha'];
 }

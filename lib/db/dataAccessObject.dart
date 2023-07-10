@@ -1,49 +1,66 @@
+import 'dart:convert';
+import 'package:flutter_app/db/openDatabasedb.dart';
 import 'package:flutter_app/model/comanda.dart';
 import 'package:flutter_app/model/pedido.dart';
-import 'package:sqflite/sqflite.dart';
-
-import '../model/produto.dart';
-import 'OpenDatabasedb.dart';
+import 'package:flutter_app/model/produto.dart';
+import 'package:http/http.dart' as http;
 
 class DataAccessObject{
-
+  addComanda(Comanda comanda) async{
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    await http.post(Uri.parse("http://10.0.2.2:8080/pedidos/comandas"),body: jsonEncode(comanda.toMap()), headers: header);
+  }
   addPedido(Pedido pedido) async{
-    final Database db = await getDatabase();
-    db.insert("PEDIDO", pedido.toMap());
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    await http.post(Uri.parse("http://10.0.2.2:8080/pedidos"),body: jsonEncode(pedido.toMap()), headers: header);
   }
   Future<List<Comanda>> getComandas() async{
-    final Database db = await getDatabase();
-    List<Map<String, dynamic>> maps = await db.query("COMANDA");
-    return List.generate(maps.length, (index){
-      return Comanda(
-          nome: maps[index]['nome'],
-          mesa: maps[index]['mesa'],
-          codigo: maps[index]['codigo']
-      );
-    });
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    var response = await http.get(Uri.parse("http://10.0.2.2:8080/pedidos/comandas"), headers: header);
+    var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
+    return responseJson.map<Comanda>((json)=>Comanda.fromJson(json)).toList();
   }
   Future<List<Pedido>> getPedidos(int comanda) async{
-    final Database db = await getDatabase();
-    List<Map<String, dynamic>> maps = await db.query("PEDIDO", where: "codigo_comanda = ?", whereArgs: [comanda]);
-    print("Teste");
-    print(maps[0]);
-    return List.generate(maps.length, (index){
-      return Pedido(
-          codigo_comanda: maps[index]['codigo_comanda'],
-          produto: maps[index]['produto'],
-          quantidade: maps[index]['quantidade'],
-          codigo: maps[index]['codigo']
-      );
-    });
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    var response = await http.get(Uri.parse("http://10.0.2.2:8080/pedidos/comanda/${comanda}"), headers: header);
+    var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
+    return responseJson.map<Pedido>((json)=>Pedido.fromJson(json)).toList();
   }
   Future<Comanda> getComanda(int id) async{
-    final Database db = await getDatabase();
-    List<Map<String, dynamic>> maps = await db.query("COMANDA", where: "codigo = ?", whereArgs: [id]);
-    return Comanda(nome: maps[0]['nome'], mesa: maps[0]['mesa'], codigo: maps[0]['codigo']);
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    var response = await http.get(Uri.parse("http://10.0.2.2:8080/comanda/${id}"), headers: header);
+    var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
+    return Comanda.fromJson(responseJson);
   }
   Future<Pedido> getPedido(int id) async{
-    final Database db = await getDatabase();
-    List<Map<String, dynamic>> maps = await db.query("PEDIDO", where: "codigo = ?", whereArgs: [id]);
-    return Pedido(codigo_comanda: maps[0]['codigo_comanda'], produto: maps[0]['produto'], quantidade: maps[0]['quantidade'], codigo: maps[0]['codigo']);
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    var response = await http.get(Uri.parse("http://10.0.2.2:8080/pedido/${id}"), headers: header);
+    var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
+    return Pedido.fromJson(responseJson);
+  }
+  Future<Produto> getProduto(int id) async{
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    var response = await http.get(Uri.parse("http://10.0.2.2:8080/produtos/byId/${id}"), headers: header);
+    var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
+    return Produto.fromJson(responseJson);
+  }
+  Future<List<Produto>> getProdutos() async{
+    print("\n\n\n\nTESTE ver se ta chegando aqui \n\n\n");
+    String token = await getToken();
+    var header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    var response = await http.get(Uri.parse("http://10.0.2.2:8080/produtos"), headers: header);
+    var responseJson = jsonDecode(utf8.decode(response.bodyBytes));
+    print(responseJson);
+    responseJson.map((json){
+      print(json.toMap());
+    });
+    return responseJson.map<Produto>((json)=>Produto.fromJson(json)).toList();
   }
 }

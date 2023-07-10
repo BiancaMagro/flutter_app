@@ -7,8 +7,13 @@ Future<Database> getDatabase() async{
   return openDatabase(
       path,
       onCreate: (db, version){
-        db.execute("CREATE TABLE PRODUTO (codigo INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, valor INTEGER)");
-        db.execute("CREATE TABLE COMANDA (codigo INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, mesa INTEGER)");
-        db.execute("CREATE TABLE PEDIDO (codigo INTEGER PRIMARY KEY AUTOINCREMENT, produto INTEGER, codigo_comanda INTEGER, quantidade INTEGER)");
-      }, version: 1);
+        db.execute("CREATE TABLE login (token TEXT, codigo INTEGER UNIQUE)");
+        db.insert("login", {"token": "token", "codigo": 1});
+      }, version: 2);
+}
+
+Future<String> getToken() async{
+  final Database db = await getDatabase();
+  List<Map<String, dynamic>> maps = await db.query("login", where: "codigo = ?", whereArgs: [1]);
+  return maps[0]['token'];
 }
