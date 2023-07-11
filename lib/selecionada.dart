@@ -119,20 +119,35 @@ class _SelecionadaState extends State<Selecionada> {
           initialData: [],
           builder: (context, snapshot2) {
             if (!snapshot2.hasData) {
-              return Container();// Exibir um indicador de progresso enquanto os dados são carregados.
+              return Container();
             } else if (snapshot2.data!.isEmpty) {
               return Container(
                 child: Text("Sem pedidos por enquanto!"),
-              );// Exibir uma mensagem de erro caso ocorra algum problema.
+              );
             } else {
               List<Pedido> pedidos = snapshot2.data!;
               return ListView.builder(
                 itemCount: pedidos.length,
                 itemBuilder: (BuildContext context, index) {
                   Pedido pedido = pedidos[index];
-                  return ListTile(
-                    title: Text("${pedido.produto}"),
-                    subtitle: Text("X ${pedido.quantidade}"),
+                  return Container(
+                    padding: EdgeInsets.all(10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("${pedido.produto?.nome}"),
+                            Text("X ${pedido.quantidade}"),
+                          ],
+                        ),
+                        (pedido.status?.codigo == 1)?ElevatedButton(onPressed: (){}, child: Text("Excluir")):Container(),
+                        (pedido.status?.codigo == 2)?Text("Pedido sendo preparado"):Container(),
+                        (pedido.status?.codigo == 3)?ElevatedButton(onPressed: (){}, child: Text("entregar")):Container(),
+                        (pedido.status?.codigo == 4)?Text("Pedido entregue"):Container(),
+                      ],
+                    )
                   );
                 },
               );

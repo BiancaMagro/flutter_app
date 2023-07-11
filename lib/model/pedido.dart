@@ -14,14 +14,16 @@ class Pedido{
       'codigo': codigo,
       'produto': produto?.toMap(),
       'codigo_comanda': codigo_comanda,
-      'quantidade': quantidade
+      'quantidade': quantidade,
+      "status": status?.toMap()
     };
   }
 
   Pedido.fromJson(Map<String, dynamic> json):
       codigo = json['codigo'],
-      produto = json['produto'],
+      produto = Produto.fromJson(json['produto']),
       codigo_comanda = json['codigo_comanda'],
-      quantidade = json['quantidade'];
+      quantidade = json['quantidade'],
+      status = Status.fromJson(json['status']);
 
 }
