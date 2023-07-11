@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/db/dataAccessObject.dart';
 import 'package:flutter_app/model/pedido.dart';
@@ -80,26 +82,29 @@ class _SelecionadaState extends State<Selecionada> {
                       ),
                       ElevatedButton(
                           onPressed: () async{
-                            setState(() {
 
-                            });
-                            Navigator.of(context).pop();
+
                             Produto prod = await DataAccessObject().getProduto(_produto);
                             if(prod.indcozinha!) {
-                              DataAccessObject().addPedido(Pedido(
+                              await DataAccessObject().addPedido(Pedido(
                                   codigo_comanda: widget.id_comanda,
                                   produto: prod,
                                   quantidade: int.tryParse(_quantidade.text)!,
                                   status: Status(codigo: 1)
                               ));
                             } else{
-                              DataAccessObject().addPedido(Pedido(
+                              await DataAccessObject().addPedido(Pedido(
                                   codigo_comanda: widget.id_comanda,
                                   produto: prod,
                                   quantidade: int.tryParse(_quantidade.text)!,
                                   status: Status(codigo: 3)
                               ));
                             }
+                            sleep(Duration(milliseconds: 500));
+                            Navigator.of(context).pop();
+                            setState((){
+
+                            });
                           },
                           child: Text("Adicionar")
                       )
@@ -142,10 +147,37 @@ class _SelecionadaState extends State<Selecionada> {
                             Text("X ${pedido.quantidade}"),
                           ],
                         ),
-                        (pedido.status?.codigo == 1)?ElevatedButton(onPressed: (){}, child: Text("Excluir")):Container(),
-                        (pedido.status?.codigo == 2)?Text("Pedido sendo preparado"):Container(),
-                        (pedido.status?.codigo == 3)?ElevatedButton(onPressed: (){}, child: Text("entregar")):Container(),
-                        (pedido.status?.codigo == 4)?Text("Pedido entregue"):Container(),
+                        (pedido.status?.codigo == 1)? ElevatedButton(onPressed: (){
+                          showDialog(context: context, builder: (context){
+                            return AlertDialog(
+                              title: Text("Deseja prosseguir?"),
+                              content: Text("Tem certeza que deseja remover o pedido X ${pedido.quantidade} ${pedido.produto?.nome}"),
+                              actions: [
+                                ElevatedButton(onPressed: (){
+                                  Navigator.of(context).pop();
+                                }, child: Text("Cancelar")),
+                                ElevatedButton(onPressed: () async{
+                                  await DataAccessObject().deletar(pedido.codigo!);
+                                  sleep(Duration(milliseconds: 300));
+                                  setState(() {
+
+                                  });
+                                  Navigator.of(context).pop();
+                                }, child: Text("Confirmar"))
+                              ],
+                            );
+                          });
+                        }, child: Text("Excluir")):
+                        (pedido.status?.codigo == 2)? Text("Pedido sendo preparado"):
+                        (pedido.status?.codigo == 3)? ElevatedButton(onPressed: () async{
+                          pedido.status = Status(codigo: 4);
+                          await DataAccessObject().editar(pedido, pedido.codigo!);
+                          sleep(Duration(milliseconds: 1000));
+                          setState(() {
+
+                          });
+                        }, child: Text("entregar")):
+                        (pedido.status?.codigo == 4)? Text("Pedido entregue"):Container()
                       ],
                     )
                   );

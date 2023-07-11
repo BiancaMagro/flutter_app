@@ -10,10 +10,11 @@ class Pedido{
   Pedido({this.codigo, required this.codigo_comanda, required this.produto, required this.quantidade, this.status});
 
   Map<String, dynamic> toMap(){
+    print(status?.toMap());
     return {
       'codigo': codigo,
       'produto': produto?.toMap(),
-      'codigo_comanda': codigo_comanda,
+      'comanda': codigo_comanda,
       'quantidade': quantidade,
       "status": status?.toMap()
     };
@@ -22,7 +23,7 @@ class Pedido{
   Pedido.fromJson(Map<String, dynamic> json):
       codigo = json['codigo'],
       produto = Produto.fromJson(json['produto']),
-      codigo_comanda = json['codigo_comanda'],
+      codigo_comanda = json['comanda'],
       quantidade = json['quantidade'],
       status = Status.fromJson(json['status']);
 
