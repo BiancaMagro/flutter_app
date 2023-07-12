@@ -70,4 +70,9 @@ class DataAccessObject{
     final header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
     await http.delete(Uri.parse("http://10.0.2.2:8080/pedidos/${codigo}"), headers: header);
   }
+  fecharComanda(int codigo) async{
+    String token = await getToken();
+    final header = {"Content-Type":"application/json", "Authorization": "Bearer ${token}"};
+    await http.delete(Uri.parse("http://10.0.2.2:8080/pedidos/comanda/${codigo}"), headers: header);
+  }
 }

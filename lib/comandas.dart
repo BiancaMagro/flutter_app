@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app/db/dataAccessObject.dart';
 import 'package:flutter_app/selecionada.dart';
@@ -56,10 +58,11 @@ class _comandasState extends State<comandas> {
                   keyboardType: TextInputType.text,
                 ),
                 ElevatedButton(
-                  onPressed: (){
-                    DataAccessObject().addComanda(Comanda(nome: _nome.text, mesa: int.tryParse(_mesa.text)!));
+                  onPressed: () async{
+                    await DataAccessObject().addComanda(Comanda(nome: _nome.text, mesa: int.tryParse(_mesa.text)!));
                     _nome.clear();
                     _mesa.clear();
+                    sleep(Duration(milliseconds: 500));
                     setState(() {
 
                     });
@@ -103,13 +106,48 @@ class _comandasState extends State<comandas> {
                                   Text((comandas != null)?"Mesa: ${comandas[index].mesa}": "", style: TextStyle(fontSize: 22)),
                                 ],
                               ),
-                              ElevatedButton(
-                                  onPressed: (){
-                                    setState(() {
-                                      Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Selecionada(id_comanda: comandas![index].codigo!)));
-                                    });
-                                  },
-                                  child: Text("Selecionar")
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  ElevatedButton(
+                                      onPressed: (){
+                                        setState(() {
+                                          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> Selecionada(id_comanda: comandas![index].codigo!)));
+                                        });
+                                      },
+                                      child: Text("Selecionar")
+                                  ),
+                                  ElevatedButton(
+                                      onPressed: (){
+                                        showDialog(context: context, builder: (context){
+                                          return AlertDialog(
+                                            title: Text("Confirmar!"),
+                                            content: Text("Tem certeza que deseja fechar essa comanda?"),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () async{
+                                                  await DataAccessObject().fecharComanda(comandas![index].codigo!);
+                                                  //sleep(Duration(milliseconds: 500));
+                                                  setState(() {
+
+                                                  });
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("Sim")
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: (){
+                                                  Navigator.of(context).pop();
+                                                },
+                                                child: Text("Não")
+                                              )
+                                            ],
+                                          );
+                                        });
+                                      },
+                                      child: Text("Fechar Comanda")
+                                  )
+                                ],
                               )
                             ],
                           ),
